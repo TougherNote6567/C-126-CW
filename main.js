@@ -1,81 +1,88 @@
-S1= "";
-Leftwrist=0
-Rightwrist=0;
-Leftwristx=0;
-Leftwristy=0;
-Rightwristx=0;
-Rightwristy=0;
+song1="";
+rightwristX=0;
+rightwristY=0;
+leftwristX=0;
+leftwristY=0;
+scoreleftwrist=0;
+scorerightwrist=0;
 
 function preload(){
-S1= loadSound("Speechless.mp3");
+    song1=loadSound("Speechless.mp3");
 }
 
 function setup(){
-canvas= createCanvas(400,300);
+canvas=createCanvas(500,400);
 canvas.center();
-video= createCapture(VIDEO);
+video=createCapture(VIDEO);
 video.hide();
-posenet= ml5.poseNet(video, modelLoaded);
+posenet=ml5.poseNet(video,modelloaded);
 posenet.on("pose", gotPoses);
-
 }
 
 function gotPoses(results){
-    if (results.length > 0){
+    if(results.length>0){
         console.log(results);
-        Leftwristx=results[0].pose.leftWrist.x;
-        Leftwristy=results[0].pose.leftWrist.y;
-        Rightwristx=results[0].pose.rightWrist.x;
-        Rightwristy=results[0].pose.rightWrist.y;
-        Leftwrist=results[0].pose.keypoints[9].score;
-        Rightwrist=results[0].pose.keypoints[10].score;
+    leftwristX=results[0].pose.leftWrist.x;
+    leftwristY=results[0].pose.leftWrist.y;
+    rightwristX=results[0].pose.rightWrist.x;
+    rightwristY=results[0].pose.rightWrist.y;
+    console.log("leftwristX="+leftwristX+"leftwristY="+leftwristY);
+    console.log("rightwristX="+rightwristX+"rightwristY="+rightwristY);
+    scoreleftwrist=results[0].pose.keypoints[9].score;
+    scorerightwrist=results[0].pose.keypoints[10].score;
+    console.log("scoreleftwrist="+scoreleftwrist);
+    console.log("scorerightwrist="+scorerightwrist);
+}
+}
+
+function draw(){
+image(video,0,0,500,400);
+fill("red");
+stroke("blue");
+if(scoreleftwrist>0.2){
+    circle(leftwristX,leftwristY,20);
+    leftwristYno=Number(leftwristY);
+    leftwristYnodecimal=floor(leftwristYno*2);
+    leftwristYscaledown=leftwristYnodecimal/1000;
+    document.getElementById("showvolume").innerHTML="VOLUME:"+leftwristYscaledown;
+    song1.setVolume(leftwristYscaledown);
+}
+if(scorerightwrist>0.2){
+    circle(rightwristX,rightwristY,20);
+    if(rightwristY>0&&rightwristY<=100)
+    {
+        document.getElementById("showspeed").innerHTML="SPEED:0.5x";
+        song1.rate(0.5);
+    }
+    else if(rightwristY>100&&rightwristY<=200)
+    {
+    document.getElementById("showspeed").innerHTML="SPEED:1x";
+    song1.rate(1);
+    }
+    else if(rightwristY>200&&rightwristY<=300)
+    {
+    document.getElementById("showspeed").innerHTML="SPEED:1.5x";
+    song1.rate(1.5);
+    }
+    else if(rightwristY>300&&rightwristY<=400)
+    {
+    document.getElementById("showspeed").innerHTML="SPEED:2x";
+    song1.rate(2);
+    }
+    else if(rightwristY>400&&rightwristY<=500)
+    {
+    document.getElementById("showspeed").innerHTML="SPEED:2.5x";
+    song1.rate(2.5);
     }
 }
-
-function modelLoaded(){
-    console.log("Model has been loaded");
-}
-function draw(){
-image(video, 0,0,400,300);
-
-fill("green");
-stroke("red");
-
-if(Leftwrist > 0.2){
-circle(Leftwristx, Leftwristy, 20);
-if(Leftwristy>0&&Leftwristy<=100){
-    document.getElementById("Speed").innerHTML="Speed is 0.5x";
-S1.rate(0.5);
-}
-else if(Leftwristy>100&&Leftwristy<=200){
-    document.getElementById("Speed").innerHTML="Speed is 1x";
-S1.rate(1);
-}
-else if(Leftwristy>200&&Leftwristy<=300){
-    document.getElementById("Speed").innerHTML="Speed is 1.5x";
-S1.rate(1.5);
-}
-else if(Leftwristy>300&&Leftwristy<=400){
-    document.getElementById("Speed").innerHTML="Speed is 2x";
-S1.rate(2);
-}
-else if(Leftwristy>400&&Leftwristy<=500){
-    document.getElementById("Speed").innerHTML="Speed is 2.5x";
-S1.rate(2.5);
-}
-}
-if(Rightwrist > 0.2){
-    circle(Rightwristx, Rightwristy, 20);
-  Numberr =Number(Rightwristy);
-    NumberRW= floor(Numberr);
-    scaleRW=NumberRW/500;
-    document.getElementById("Volume").innerHTML="Volume is "+scaleRW;
-    S1.setVolume(scaleRW);
-}
 }
 
-function playSound(){
-    song.play();
-    song.setVolume(1);
-    song.rate(1);
+ function playsong(){
+     song1.play();
+     song1.setVolume(1);
+     song1.rate(1);
 }
+
+ function modelloaded(){
+     console.log("model Loaded");
+ }
